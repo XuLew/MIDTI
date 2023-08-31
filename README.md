@@ -1,5 +1,5 @@
 # MIDTI
-MIDTI:The codes demo for paper "Drug-target interaction predictions with multi-view similarity networks fusion and deep interactive attention mechanism strategy".
+MIDTI: The codes demo for paper "Drug-target interaction predictions with multi-view similarity networks fusion and deep interactive attention mechanism strategy".
 
 # Required Packages
 Python 3.7.1
