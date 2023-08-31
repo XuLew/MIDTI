@@ -79,10 +79,11 @@ def pretrain(model, train_data, optimizer, opt):
 
     return feature, matrix
 
-def main():
-    args = parameter_parser()
+def main(name):
+    args = parameter_parser(name)
     pretrain_data = data_pre(args)
     torch.cuda.empty_cache()
+
     model = ReGCNs(args)
     model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
@@ -90,7 +91,8 @@ def main():
 
 if __name__ == "__main__":
     torch.cuda.empty_cache()
-    main()
+    main("drug")
+    main("protein")
 
 
 

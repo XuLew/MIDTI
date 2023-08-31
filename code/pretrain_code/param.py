@@ -1,13 +1,13 @@
 import argparse
 
 
-def parameter_parser():
+def parameter_parser(name):
 
     parser = argparse.ArgumentParser(description="Run ReGCN.")
     parser.add_argument("--name",
-                        nargs="?",
-                        default="protein",
-                        help="Training similarity datasets name，drug or protein")
+                      nargs="?",
+                      default=name,
+                      help="Training similarity datasets name，drug or protein")
 
     parser.add_argument("--pretrain-dataset-path",
                         nargs="?",

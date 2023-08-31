@@ -2,8 +2,8 @@ import pickle
 import timeit
 
 import numpy as np
-from sklearn.metrics._classification import accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
-from sklearn.metrics._ranking import roc_auc_score, roc_curve, average_precision_score
+from sklearn.metrics.classification import accuracy_score, precision_score, recall_score, f1_score, matthews_corrcoef
+from sklearn.metrics.ranking import roc_auc_score, roc_curve, average_precision_score
 # from sklearn.metrics import matthews_corrcoef, f1_score
 # from torch import optim, softmax
 
@@ -361,7 +361,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
 
     if log_write:
         log_dir = '../output/log/'
-        file_name = 'MIDTI_crossIA{}_fold{}'.format(layer_IA, fold) + '.log'
+        file_name = 'MIDTI_IA{}_fold{}'.format(layer_IA, fold) + '.log'
 
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
@@ -374,8 +374,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
 
         print('---------epoch{}---------'.format(epoch))
         loss_train, _ = trainer.train(train_dataset, datasetF)
-
-        train_acc, _, _, _ , _, _, _= tester.dev(train_dataset, datasetF)  # 计算当前模型训练集上的准确率
+        _, _, train_acc, _, _, _ , _, _, _= tester.dev(epoch, train_dataset, datasetF)  # 计算当前模型训练集上的准确率
         test_labels, test_scores, dev_acc, dev_auc, dev_aupr, dev_precision, dev_recall, dev_f1, dev_mcc = tester.dev(epoch, dev_dataset, datasetF)  # 验证集
 
         end = timeit.default_timer()

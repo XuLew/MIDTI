@@ -6,9 +6,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 import numpy as np
-# from torch_geometric.nn.conv.gcn_conv import GCNConv
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# device = torch.device('cpu')
 
 
 class GraphConvolution(nn.Module):

@@ -9,8 +9,8 @@ import math
 from GCNLayer import GCN_homo, GCN_bi, GCN_hete
 
 
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device = torch.device('cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device('cpu')
 
 
 class MHAtt(nn.Module):
@@ -298,16 +298,16 @@ class Dtis(nn.Module):
         self.gcnlayer = GCNLayer(input_d, input_p, dim)
         self.co_attention = attention
 
-        # attention layers
-        self.layer_ia = layer_IA
+        # the number of attention layers
+        self.layer_IA = layer_IA
 
-        # self.encoder_coa_layers = encoder_cross_att(dim, nhead, dropout, layer_IA)
-        # self.stack_coa_layers = nn.ModuleList([stack_cross_att(dim, nhead, dropout) for _ in range(layer_IA)])
+        # self.encoder_IA_ModuleList = encoder_cross_att(dim, nhead, dropout, layer_IA)
+        # self.stack_IA_ModuleList = nn.ModuleList([stack_cross_att(dim, nhead, dropout) for _ in range(layer_IA)])
 
-        self.coa_layers = nn.ModuleList([inter_cross_att(dim, nhead, dropout) for _ in range(layer_IA)])
+        self.IA_ModuleList = nn.ModuleList([inter_cross_att(dim, nhead, dropout) for _ in range(layer_IA)])
         self.dr_lin = nn.Linear(layer_IA*dim, dim)
         self.pro_lin = nn.Linear(layer_IA*dim, dim)
-        # output layers
+        # the number of output layers
         self.layer_output = layer_output
 
         # self.W_out = nn.ModuleList([nn.Linear(2*dim, dim),nn.Linear(dim, 128),nn.Linear(128, 64)]) #mlp=4
@@ -334,14 +334,14 @@ class Dtis(nn.Module):
         proteins = y_p_pro[id1, :, :]   # (1,9,512)
 
         # #encoder
-        # drug_vector, protein_vector = self.encoder_coa_layers(drugs, proteins)
+        # drug_vector, protein_vector = self.encoder_IA_ModuleList(drugs, proteins)
         # #stack
-        # for i in range(self.layer_coa):
-        #     drug_vector, protein_vector = self.stack_coa_layers[i](drugs, proteins)
+        # for i in range(self.layer_IA):
+        #     drug_vector, protein_vector = self.stack_IA_ModuleList[i](drugs, proteins)
 
         # IA(inteactive attention)
-        for i in range(self.layer_coa): #目标模型，将co-attention每层的输出拼接在一起
-            drug_vector, protein_vector = self.coa_layers[i](drugs, proteins) #1,6,512
+        for i in range(self.layer_IA): #目标模型，将co-attention每层的输出拼接在一起
+            drug_vector, protein_vector = self.IA_ModuleList[i](drugs, proteins) #1,6,512
             if i ==0:
                 drug_vector_co, protein_vector_co = drug_vector, protein_vector
             else:
