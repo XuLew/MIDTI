@@ -2,19 +2,27 @@
 MIDTI: The codes demo for paper "Drug-target interaction predictions with multi-view similarity networks fusion and deep interactive attention mechanism strategy".
 
 # Required Packages
-Python 3.7.1
+Python 3.7.0
 
-Pytorch 1.10.1
+Numpy 1.21.6
 
-Numpy 1.21.4
+Pytorch 1.10.1+cu113
 
-Pytorch-geometric 2.0.2
+Pytorch-cluster 1.5.9
 
-Pandas 1.3.5
+Pytorch-scatter 2.0.9
 
-Scikit-learn 1.0.1
+Pytorch-sparse 0.6.12
 
-Scipy 1.7.3
+Pytorch-spline-conv 1.2.2
+
+Pytorch-geometric 2.0.0
+
+Pandas 0.23.4
+
+Scikit-learn 0.19.2
+
+Scipy 1.1.0
 
 # Quick start
 run the code "code/train.py" directly.
