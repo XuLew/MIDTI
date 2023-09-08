@@ -448,7 +448,7 @@ if __name__ == "__main__":
     random_seed = 2021
     optimizer = 'lookahead-SGD'
     layer_output = 3  # mlp layer
-    nhead = 2 #1 #2 #4 #8#16
+    nhead = 8 #1 #2 #4 #8#16
     dropout = 0.1
     attention = 'IA'
 
