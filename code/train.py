@@ -309,7 +309,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
     test_dataset = torch.from_numpy(test_dataset)
 
     """Set a model."""
-    ATTENTION = attention  # 'IA'
+    ATTENTION = attention  # 'DIA'
 
     # num_training_steps = len(train_loader) * iteration
     print('num_training_steps:', iteration)
@@ -450,7 +450,7 @@ if __name__ == "__main__":
     layer_output = 3  # mlp layer
     nhead = 8 #1 #2 #4 #8#16
     dropout = 0.1
-    attention = 'IA'
+    attention = 'DIA'
 
     (dim, layer_output, layer_IA,
      iteration, random_seed, nhead) = map(int, [dim,layer_output, layer_IA,
@@ -482,7 +482,7 @@ if __name__ == "__main__":
     for fold in range(0, nfold):  
         # DATASET = 'LuoDTI'
         # print(device)
-        best_acc, best_auc, best_aupr, best_precision, best_recall, best_f1, best_mcc = train(DATASET, fold, 0.9, 'IA', random_seed, True)
+        best_acc, best_auc, best_aupr, best_precision, best_recall, best_f1, best_mcc = train(DATASET, fold, 0.9, attention, random_seed, True)
         result_acc[fold] = best_acc
         result_auc[fold] = best_auc
         result_aupr[fold] = best_aupr
