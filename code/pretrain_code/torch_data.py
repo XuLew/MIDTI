@@ -47,6 +47,6 @@ def read_csv(path):
 def outputCSVfile(filename, data):
     csvfile = open(filename, 'w', newline="")
     writer = csv.writer(csvfile)
-    writer.writerows(data)  # 写入多行数据
+    writer.writerows(data)  
     csvfile.close()
 
