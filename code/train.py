@@ -146,7 +146,7 @@ class Trainer(object):
 
         cat_vector, predicted, interaction = self.model(train_dataset, datasetF)
 
-        criterion = CrossEntropyLoss().to(device)  # 交叉熵损失(Cross Entropy Loss, CE)，已经含有softmax
+        criterion = CrossEntropyLoss().to(device)
         loss = criterion(predicted, interaction)
 
 
