@@ -22,7 +22,7 @@ from collections import defaultdict
 from torch.optim import Optimizer, SGD
 import torch
 
-from MIDTI import Dtis
+from MIDTI import DTI_pre
 from code.pretrain_code.dataprocessing import preprocess_adj, normalize_features
 from code.pretrain_code.torch_data import read_txt, read_csv
 
@@ -31,7 +31,7 @@ def get_edge_index(matrix):
     edge_index = [[], []]
     for i in range(matrix.size(0)):
         for j in range(matrix.size(1)):
-            if matrix[i][j] != 0: #是否要设置边的阈值，暂时不设置
+            if matrix[i][j] != 0: 
                 edge_index[0].append(i)
                 edge_index[1].append(j)
     return Tensor(edge_index)
@@ -254,7 +254,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
     global best_train_acc, best_acc, best_epoch, best_aupr, best_loss_train, best_precision, best_f1, best_mcc, best_recall
     dir_input = ('../dataset/' + DATASET)
 
-    # 五折交叉
+    
     train_dataset = np.loadtxt(dir_input + '/input/cross_tra_kfold{}_seed1.txt'.format(fold), dtype=int, delimiter=',')
     dev_dataset = np.loadtxt(dir_input + '/input/cross_tes_kfold{}_seed1.txt'.format(fold), dtype=int, delimiter=',')
     test_dataset = dev_dataset
@@ -320,7 +320,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
 
     print(AUCs_title)
 
-    model = Dtis(drug_num, protein_num, dim, layer_output, layer_IA, nhead, dropout, attention=ATTENTION).to(device)
+    model = DTI_pre(drug_num, protein_num, dim, layer_output, layer_IA, nhead, dropout, attention=ATTENTION).to(device)
 
     trainer = Trainer(model)
     tester = Tester(model)
@@ -374,8 +374,8 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
 
         print('---------epoch{}---------'.format(epoch))
         loss_train, _ = trainer.train(train_dataset, datasetF)
-        _, _, train_acc, _, _, _ , _, _, _= tester.dev(epoch, train_dataset, datasetF)  # 计算当前模型训练集上的准确率
-        test_labels, test_scores, dev_acc, dev_auc, dev_aupr, dev_precision, dev_recall, dev_f1, dev_mcc = tester.dev(epoch, dev_dataset, datasetF)  # 验证集
+        _, _, train_acc, _, _, _ , _, _, _= tester.dev(epoch, train_dataset, datasetF)  
+        test_labels, test_scores, dev_acc, dev_auc, dev_aupr, dev_precision, dev_recall, dev_f1, dev_mcc = tester.dev(epoch, dev_dataset, datasetF) 
 
         end = timeit.default_timer()
         time = end - start
@@ -399,7 +399,7 @@ def train(DATASET, fold, save_auc, attention, random_seed, log_write=True):
                 best_AUC = best_epoch, best_loss_train, best_train_acc, (
                 best_acc, best_auc, best_aupr, best_precision, best_recall, best_f1, best_mcc)
 
-                # np.savetxt('test_scores_fold{}.txt'.format(fold), test_scores)  # 保存结束时测试集的预测结果和标签
+                # np.savetxt('test_scores_fold{}.txt'.format(fold), test_scores)  
                 # np.savetxt('test_labels_fold{}.txt'.format(fold), test_labels)
                 print('the new best model', best_AUC)
 
@@ -438,7 +438,7 @@ if __name__ == "__main__":
     """Hyperparameters."""
     nfold = 5
     DATASET = 'LuoDTI'
-    dim = 512#512
+    dim = 512
 
 
     layer_IA = 3 #4#2 #1
@@ -479,7 +479,7 @@ if __name__ == "__main__":
     result_recall = np.zeros((nfold))
     result_f1 = np.zeros((nfold))
     result_mcc = np.zeros((nfold))
-    for fold in range(0, nfold):  #(0, nfold)  n折交叉检验
+    for fold in range(0, nfold):  
         # DATASET = 'LuoDTI'
         # print(device)
         best_acc, best_auc, best_aupr, best_precision, best_recall, best_f1, best_mcc = train(DATASET, fold, 0.9, 'IA', random_seed, True)
