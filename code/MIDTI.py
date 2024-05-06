@@ -82,26 +82,18 @@ class DTA_TDA(nn.Module):
     def __init__(self, hid_dim, n_heads, dropout):
         super(DTA_TDA, self).__init__()
 
-        self.mhatt1 = MHAtt(hid_dim, n_heads, dropout)
-        # self.mhatt1 = MultiAttn(hid_dim, n_heads)
-
-        self.dropout1 = nn.Dropout(dropout)
-        self.norm1 = nn.LayerNorm(hid_dim)
+        self.mhatt = MHAtt(hid_dim, n_heads, dropout)
+        self.dropout = nn.Dropout(dropout)
+        self.norm = nn.LayerNorm(hid_dim)
 
 
 
     def forward(self, x, y, y_mask=None):
 
         # x as V while y as Q and K
-        # x = self.norm1(x + self.dropout1(
-        #     self.mhatt1(x, x, y, y_mask)
-        # ))
-        x = self.norm1(x+self.dropout1(
-            self.mhatt1(y, y, x, y_mask)
+        x = self.norm(x+self.dropout(
+            self.mhatt(y, y, x, y_mask)
         ))
-        # x = self.norm1(x + self.dropout1(
-        #     self.mhatt1(x, y, y_mask, y_mask)
-        # ))
 
         return x
 
@@ -110,20 +102,17 @@ class SA(nn.Module):
     def __init__(self, hid_dim, n_heads, dropout):
         super(SA, self).__init__()
 
-        self.mhatt1 = MHAtt(hid_dim, n_heads, dropout)
-        self.dropout1 = nn.Dropout(dropout)
-        self.norm1 = nn.LayerNorm(hid_dim)
+        self.mhatt = MHAtt(hid_dim, n_heads, dropout)
+        self.dropout = nn.Dropout(dropout)
+        self.norm = nn.LayerNorm(hid_dim)
 
 
 
     def forward(self, x, mask=None):
 
-        x = self.norm1(x + self.dropout1(
-            self.mhatt1(x, x, x, mask)
+        x = self.norm(x + self.dropout(
+            self.mhatt(x, x, x, mask)
         ))
-        # x = self.norm1(x + self.dropout1(
-        #     self.mhatt1(x, x, mask, mask)
-        # ))
 
         return x
 
@@ -131,16 +120,16 @@ class SA(nn.Module):
 class Deep_inter_att(nn.Module):
     def __init__(self, dim, nhead, dropout):
         super(Deep_inter_att, self).__init__()
-        self.sca = SA(dim, nhead, dropout)
-        self.spa = SA(dim, nhead, dropout)
-        self.coa_pc = DTA_TDA(dim, nhead, dropout)
-        self.coa_cp = DTA_TDA(dim, nhead, dropout)
+        self.sda = SA(dim, nhead, dropout)
+        self.sta = SA(dim, nhead, dropout)
+        self.dta = DTA_TDA(dim, nhead, dropout)
+        self.tda = DTA_TDA(dim, nhead, dropout)
 
     def forward(self, drug_vector, protein_vector,):
-        drug_vector = self.sca(drug_vector, None)  # self-attention
-        protein_vector = self.spa(protein_vector, None)  # self-attention
-        drug_covector = self.coa_pc(drug_vector, protein_vector, None)  # co-attention
-        protein_covector = self.coa_cp(protein_vector, drug_vector, None)  # co-attention
+        drug_vector = self.sda(drug_vector, None)  # self-attention
+        protein_vector = self.sta(protein_vector, None)  # self-attention
+        drug_covector = self.dta(drug_vector, protein_vector, None)  # drug-target-attention
+        protein_covector = self.tda(protein_vector, drug_vector, None)  # target-drug-attention
 
         return drug_covector, protein_covector
 
@@ -228,17 +217,17 @@ class DTI_pre(nn.Module):
         id1 = train_dataset[:,1].type(torch.long).to(device)
         interaction = train_dataset[:,2].type(torch.long).to(device)
 
-        drugs = x_d_dr[id0, :, :]  # (1,9,512)
-        proteins = y_p_pro[id1, :, :]   # (1,9,512)
+        drugs = x_d_dr[id0, :, :]  # (1,10,512)
+        proteins = y_p_pro[id1, :, :]   # (1,10,512)
 
-        # IA(inteactive attention)
-        for i in range(self.layer_IA): #目标模型，将co-attention每层的输出拼接在一起
-            drug_vector, protein_vector = self.DIA_ModuleList[i](drugs, proteins) #1,6,512
+        # DIA(Deep inteactive attention)
+        for i in range(self.layer_IA): 
+            drug_vector, protein_vector = self.DIA_ModuleList[i](drugs, proteins) 
             if i ==0:
                 drug_vector_co, protein_vector_co = torch.cat([drugs, drug_vector], dim=-1), torch.cat([proteins, protein_vector], dim=-1)
             else:
                 drug_vector_co, protein_vector_co = torch.cat([drug_vector_co, drug_vector], dim=-1), torch.cat([protein_vector_co, protein_vector], dim=-1)
-                # print(drug_vector_co.shape, protein_vector_co.shape) #(1,9,512*3)
+                # print(drug_vector_co.shape, protein_vector_co.shape) #(1,10,512*3)
         drug_vector, protein_vector = self.dr_lin(drug_vector_co), self.pro_lin(protein_vector_co)
 
         drug_covector = drug_vector.mean(dim=1)
