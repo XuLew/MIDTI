@@ -78,7 +78,7 @@ class MHAtt(nn.Module):
         return torch.matmul(att_map, value)
 
 
-class f(nn.Module):
+class DTA_TDA(nn.Module):
     def __init__(self, hid_dim, n_heads, dropout):
         super(DTA_TDA, self).__init__()
 
