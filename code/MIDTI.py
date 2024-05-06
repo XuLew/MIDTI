@@ -186,7 +186,7 @@ class DTI_pre(nn.Module):
         super(DTI_pre, self).__init__()
 
         self.gcnlayer = GCNLayer(input_d, input_p, dim)
-        self.co_attention = attention
+        self.attention = attention
 
         # the number of attention layers
         self.layer_IA = layer_IA
