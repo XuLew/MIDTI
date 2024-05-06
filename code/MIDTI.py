@@ -217,8 +217,8 @@ class DTI_pre(nn.Module):
         id1 = train_dataset[:,1].type(torch.long).to(device)
         interaction = train_dataset[:,2].type(torch.long).to(device)
 
-        drugs = x_d_dr[id0, :, :]  # (1,10,512)
-        proteins = y_p_pro[id1, :, :]   # (1,10,512)
+        drugs = x_d_dr[id0, :, :]  # (1,9,512)
+        proteins = y_p_pro[id1, :, :]   # (1,9,512)
 
         # DIA(Deep inteactive attention)
         for i in range(self.layer_IA): 
@@ -227,8 +227,8 @@ class DTI_pre(nn.Module):
                 drug_vector_co, protein_vector_co = torch.cat([drugs, drug_vector], dim=-1), torch.cat([proteins, protein_vector], dim=-1)
             else:
                 drug_vector_co, protein_vector_co = torch.cat([drug_vector_co, drug_vector], dim=-1), torch.cat([protein_vector_co, protein_vector], dim=-1)
-                # print(drug_vector_co.shape, protein_vector_co.shape) #(1,10,512*3)
-        drug_vector, protein_vector = self.dr_lin(drug_vector_co), self.pro_lin(protein_vector_co)
+                # print(drug_vector_co.shape, protein_vector_co.shape) #(1,9,512*4)
+        drug_vector, protein_vector = self.dr_lin(drug_vector_co), self.pro_lin(protein_vector_co) #(1,9,512)
 
         drug_covector = drug_vector.mean(dim=1)
         protein_covector = protein_vector.mean(dim=1)
