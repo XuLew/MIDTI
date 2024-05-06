@@ -10,10 +10,8 @@ from code.pretrain_code.param import parameter_parser
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = torch.device("cpu")
 
-
-#将list（元素为数字，非字符串）存入.csv文件，每个元素占一行
-def list_write_csv(file_name, l): #file_name为写入CSV文件的路径，l为要写入数据列表
-    f = codecs.open(file_name, 'w')  # 追加
+def list_write_csv(file_name, l): 
+    f = codecs.open(file_name, 'w')  
     for line in l:
         f.write(str(line) + '\n')
     f.close()
@@ -29,7 +27,7 @@ def pretrain(model, train_data, optimizer, opt):
         model.zero_grad()
         feature, matrix = model(train_data)
         # loss =torch.nn.BCEWithLogitsLoss(reduction='mean')
-        loss = torch.nn.MSELoss(reduction='mean') # 均方误差
+        loss = torch.nn.MSELoss(reduction='mean') 
         if opt.name == 'drug':
             loss1 = loss(matrix, train_data['dd_dr']['data_matrix'].to(device))
             loss2 = loss(matrix, train_data['dd_di']['data_matrix'].to(device))
@@ -54,7 +52,7 @@ def pretrain(model, train_data, optimizer, opt):
 
 
     scoremin, scoremax = matrix.min(), matrix.max()
-    matrix = (matrix - scoremin) / (scoremax - scoremin) #线性归一化，也称min - max标准化、离差标准化；是对原始数据的线性变换，使得结果值映射到[0, 1]之间
+    matrix = (matrix - scoremin) / (scoremax - scoremin) 
 
     feature = feature.cpu().detach().numpy()
     matrix = matrix.cpu().detach().numpy()
